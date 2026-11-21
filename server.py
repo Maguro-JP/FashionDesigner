@@ -10,6 +10,8 @@ from pathlib import Path
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
+from urllib.parse import urlsplit
+import ipaddress
 
 ROOT = Path(__file__).resolve().parent
 MAX_BODY = 64 * 1024
@@ -32,8 +34,20 @@ class Handler(SimpleHTTPRequestHandler):
             if not isinstance(prompt, str) or not 1 <= len(prompt) <= 2000:
                 raise ValueError("Prompt must be 1-2000 characters")
             endpoint = os.environ.get("FD_IMAGE_API_URL", "").strip()
-            if not endpoint or not endpoint.startswith(("http://127.0.0.1:", "http://localhost:", "https://")) or "@" in endpoint.split("://", 1)[-1].split("/", 1)[0]:
+            if not endpoint:
                 raise ValueError("Configure FD_IMAGE_API_URL (localhost or HTTPS)")
+            url = urlsplit(endpoint)
+            host = url.hostname or ""
+            if url.username or url.password or url.fragment or url.scheme not in ("http", "https"):
+                raise ValueError("Invalid image API URL")
+            try:
+                ip = ipaddress.ip_address(host)
+            except ValueError:
+                ip = None
+            if url.scheme == "http" and not (host == "localhost" or ip and ip.is_loopback):
+                raise ValueError("HTTP backend must be loopback")
+            if not host or (ip and not ip.is_loopback):
+                raise ValueError("IP backends must be loopback")
             payload = json.dumps({
                 "model": os.environ.get("FD_IMAGE_MODEL", "gpt-image-1"),
                 "prompt": "Single isolated clothing item, front view, centered, plain white background, no person, no mannequin. " + prompt,
