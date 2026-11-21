@@ -1,0 +1,81 @@
+{
+  "schema": "fashion-designer/garment-spec@1",
+  "title": "画家の作業着コーデ（Canva 生成画像から分解）",
+  "source": { "kind": "image", "ref": "samples/canva-painter/source.png" },
+  "notes": [
+    "画像は上半身のみ。下半身・靴・背面は写っていないため一般的な仕様を仮定",
+    "解像度が低く、ボタン数・ステッチは推定",
+    "Claude API を通さず、画像を見て手で書き起こした spec"
+  ],
+  "items": [
+    {
+      "id": "knit-cardigan", "name": "ローゲージ ニットカーディガン", "category": "outerwear",
+      "description": "生成り色のゆったりしたニットカーディガン。前開き、長袖、リブ袖口と裾。",
+      "colors": [{ "name": "生成り", "hex": "#e9dfc9" }],
+      "flat": { "template": "top", "sleeve": "long", "neckline": "v", "length": "hip", "fit": "oversized", "closure": "buttons", "chestPockets": 0, "sidePockets": 2, "cuffs": true, "hemBand": true },
+      "components": [
+        { "name": "前身頃", "kind": "panel", "quantity": 2, "material": "knit", "notes": "成型編み" },
+        { "name": "後身頃", "kind": "panel", "quantity": 1, "material": "knit", "notes": "" },
+        { "name": "袖", "kind": "sleeve", "quantity": 2, "material": "knit", "notes": "ドロップショルダー" },
+        { "name": "前立て", "kind": "trim", "quantity": 1, "material": "rib", "notes": "1x1 リブ" },
+        { "name": "ボタン", "kind": "hardware", "quantity": 5, "material": "button", "notes": "推定" },
+        { "name": "ポケット", "kind": "pocket", "quantity": 2, "material": "knit", "notes": "パッチ" }
+      ],
+      "materials": [
+        { "id": "knit", "role": "shell", "name": "ウール混ローゲージ天竺", "composition": "ウール50% アクリル50%（推定）", "weight": "5ゲージ", "finish": "", "color": { "name": "生成り", "hex": "#e9dfc9" } },
+        { "id": "rib", "role": "rib", "name": "1x1 リブ", "composition": "同上", "weight": "unknown", "finish": "", "color": { "name": "生成り", "hex": "#e9dfc9" } },
+        { "id": "button", "role": "hardware", "name": "ウッドボタン", "composition": "木", "weight": "18mm", "finish": "", "color": { "name": "ブラウン", "hex": "#7a5a3a" } }
+      ],
+      "measurements": [
+        { "point": "着丈 (HPS)", "valueCm": 66, "tolerance": 2 },
+        { "point": "身幅", "valueCm": 60, "tolerance": 2 },
+        { "point": "袖丈", "valueCm": 52, "tolerance": 2 }
+      ],
+      "construction": [
+        { "order": 1, "operation": "各パーツを成型編み", "seam": "-", "stitch": "-" },
+        { "order": 2, "operation": "肩をリンキング", "seam": "リンキング", "stitch": "リンキング" },
+        { "order": 3, "operation": "袖付け・脇と袖下を綴じる", "seam": "リンキング", "stitch": "リンキング" },
+        { "order": 4, "operation": "前立てリブを付け、ボタン穴を開ける", "seam": "リンキング", "stitch": "鳩目穴かがり" },
+        { "order": 5, "operation": "ポケットを手綴じ、ボタン付け", "seam": "手綴じ", "stitch": "-" }
+      ],
+      "details": ["肩はドロップショルダー", "袖を軽くたくし上げて着用"],
+      "confidence": 0.6
+    },
+    {
+      "id": "collar-shirt", "name": "レギュラーカラーシャツ", "category": "top",
+      "description": "カーディガンの下に着た淡いブルーのシャツ。襟だけが見える。",
+      "colors": [{ "name": "サックスブルー", "hex": "#bcd3e6" }],
+      "flat": { "template": "top", "sleeve": "long", "neckline": "shirt-collar", "length": "hip", "fit": "regular", "closure": "buttons", "chestPockets": 1, "sidePockets": 0, "cuffs": true, "hemBand": false },
+      "components": [
+        { "name": "襟・台襟", "kind": "collar", "quantity": 2, "material": "cotton", "notes": "接着芯" },
+        { "name": "カフス", "kind": "cuff", "quantity": 2, "material": "cotton", "notes": "" }
+      ],
+      "materials": [
+        { "id": "cotton", "role": "shell", "name": "ブロード", "composition": "綿100%（推定）", "weight": "110 gsm", "finish": "", "color": { "name": "サックスブルー", "hex": "#bcd3e6" } }
+      ],
+      "measurements": [{ "point": "着丈 (HPS)", "valueCm": 70, "tolerance": 1 }],
+      "construction": [
+        { "order": 1, "operation": "襟を作り台襟に挟む", "seam": "0.7cm", "stitch": "301 2.5mm 押さえ" },
+        { "order": 2, "operation": "ヨーク・肩を縫う", "seam": "1cm 折り伏せ", "stitch": "301" },
+        { "order": 3, "operation": "袖付け、脇を巻き縫い", "seam": "巻き縫い", "stitch": "401" }
+      ],
+      "details": ["胸ポケットは推定"],
+      "confidence": 0.4
+    },
+    {
+      "id": "work-apron", "name": "胸当てワークエプロン", "category": "accessory",
+      "description": "チャコールの胸当てエプロン。首かけ・腰ひも。",
+      "colors": [{ "name": "チャコール", "hex": "#4a4a4f" }],
+      "flat": { "template": "accessory", "type": "other", "description": "胸当てエプロン。専用テンプレートが無いため汎用形で表示" },
+      "components": [
+        { "name": "本体", "kind": "panel", "quantity": 1, "material": "canvas", "notes": "" },
+        { "name": "首ひも・腰ひも", "kind": "strap", "quantity": 3, "material": "canvas", "notes": "" }
+      ],
+      "materials": [
+        { "id": "canvas", "role": "shell", "name": "帆布 8号", "composition": "綿100%（推定）", "weight": "unknown", "finish": "パラフィン加工の可能性", "color": { "name": "チャコール", "hex": "#4a4a4f" } }
+      ],
+      "measurements": [], "construction": [], "details": ["前ポケットは画像では未確認"],
+      "confidence": 0.4
+    }
+  ]
+}
