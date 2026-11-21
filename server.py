@@ -32,7 +32,7 @@ class Handler(SimpleHTTPRequestHandler):
             if not isinstance(prompt, str) or not 1 <= len(prompt) <= 2000:
                 raise ValueError("Prompt must be 1-2000 characters")
             endpoint = os.environ.get("FD_IMAGE_API_URL", "").strip()
-            if not endpoint or not endpoint.startswith(("http://127.0.0.1:", "http://localhost:", "https://")):
+            if not endpoint or not endpoint.startswith(("http://127.0.0.1:", "http://localhost:", "https://")) or "@" in endpoint.split("://", 1)[-1].split("/", 1)[0]:
                 raise ValueError("Configure FD_IMAGE_API_URL (localhost or HTTPS)")
             payload = json.dumps({
                 "model": os.environ.get("FD_IMAGE_MODEL", "gpt-image-1"),
@@ -55,7 +55,7 @@ class Handler(SimpleHTTPRequestHandler):
             if len(raw) > 15 * 1024 * 1024:
                 raise ValueError("Image too large")
             self.reply(200, {"image": "data:image/png;base64," + image})
-        except (ValueError, KeyError, IndexError, json.JSONDecodeError) as e:
+        except (ValueError, KeyError, IndexError, TypeError, json.JSONDecodeError) as e:
             self.reply(400, {"error": str(e)})
         except (HTTPError, URLError, TimeoutError) as e:
             self.reply(502, {"error": "Image backend unavailable: " + str(e)})
