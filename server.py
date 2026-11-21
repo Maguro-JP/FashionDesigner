@@ -48,12 +48,15 @@ class Handler(SimpleHTTPRequestHandler):
                 raise ValueError("HTTP backend must be loopback")
             if not host or (ip and not ip.is_loopback):
                 raise ValueError("IP backends must be loopback")
-            payload = json.dumps({
-                "model": os.environ.get("FD_IMAGE_MODEL", "gpt-image-1"),
+            model = os.environ.get("FD_IMAGE_MODEL", "gpt-image-1")
+            params = {
+                "model": model,
                 "prompt": "Single isolated clothing item, front view, centered, plain white background, no person, no mannequin. " + prompt,
                 "size": "1024x1024",
-                "response_format": "b64_json",
-            }).encode()
+            }
+            if model.startswith("dall-e-"):
+                params["response_format"] = "b64_json"
+            payload = json.dumps(params).encode()
             headers = {"Content-Type": "application/json"}
             if os.environ.get("FD_IMAGE_API_KEY"):
                 headers["Authorization"] = "Bearer " + os.environ["FD_IMAGE_API_KEY"]
