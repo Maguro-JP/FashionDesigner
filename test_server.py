@@ -47,6 +47,19 @@ class GatewayTests(unittest.TestCase):
         self.assertEqual(payload["model"], "test")
         self.assertIn("blue dress", payload["prompt"])
 
+    def test_reject_external_http(self):
+        handler = self.request("coat")
+        with patch.dict(os.environ, {"FD_IMAGE_API_URL": "http://example.com/generate"}, clear=True):
+            handler.do_POST()
+        self.assertEqual(handler.status_code, 400)
+        self.assertIn(b"loopback", handler.wfile.getvalue())
+
+    def test_reject_url_credentials(self):
+        handler = self.request("coat")
+        with patch.dict(os.environ, {"FD_IMAGE_API_URL": "https://name:password@example.com/generate"}, clear=True):
+            handler.do_POST()
+        self.assertEqual(handler.status_code, 400)
+
     def test_invalid_prompt(self):
         handler = self.request("")
         handler.do_POST()
