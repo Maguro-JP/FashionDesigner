@@ -1,0 +1,62 @@
+{
+  "schema": "fashion-designer/garment-spec@1",
+  "title": "ストリートコーデ サンプル",
+  "source": { "kind": "image", "ref": "sample.jpg" },
+  "notes": ["背面は画像に写っていないため一般的な仕様を仮定"],
+  "items": [
+    {
+      "id": "zip-hoodie", "name": "ジップパーカー", "category": "top",
+      "description": "裏毛のフルジップパーカー。リブ袖口・リブ裾。",
+      "colors": [{ "name": "ブラック", "hex": "#1a1a1a" }],
+      "flat": { "template": "top", "sleeve": "long", "neckline": "hood", "length": "hip", "fit": "relaxed", "closure": "zip", "chestPockets": 0, "sidePockets": 2, "cuffs": true, "hemBand": true },
+      "components": [
+        { "name": "前身頃", "kind": "panel", "quantity": 2, "material": "shell", "notes": "" },
+        { "name": "フード", "kind": "panel", "quantity": 2, "material": "shell", "notes": "2枚はぎ" },
+        { "name": "袖口・裾リブ", "kind": "cuff", "quantity": 3, "material": "rib", "notes": "" },
+        { "name": "フロントジップ", "kind": "closure", "quantity": 1, "material": "zip", "notes": "5号 オープン" }
+      ],
+      "materials": [
+        { "id": "shell", "role": "shell", "name": "裏毛", "composition": "綿100%", "weight": "320 gsm", "finish": "起毛なし", "color": { "name": "ブラック", "hex": "#1a1a1a" } },
+        { "id": "rib", "role": "rib", "name": "2x1リブ", "composition": "綿95% ポリウレタン5%", "weight": "unknown", "finish": "", "color": { "name": "ブラック", "hex": "#1a1a1a" } },
+        { "id": "zip", "role": "hardware", "name": "金属ファスナー", "composition": "真鍮", "weight": "unknown", "finish": "黒ニッケル", "color": { "name": "ガンメタ", "hex": "#444444" } }
+      ],
+      "measurements": [
+        { "point": "着丈 (HPS)", "valueCm": 68, "tolerance": 1 },
+        { "point": "身幅", "valueCm": 58, "tolerance": 1 },
+        { "point": "袖丈", "valueCm": 62, "tolerance": 1 }
+      ],
+      "construction": [
+        { "order": 1, "operation": "フード中心を縫い合わせる", "seam": "1cm 本縫い後ロック", "stitch": "301 3mm" },
+        { "order": 2, "operation": "肩を縫い合わせる", "seam": "4本ロック", "stitch": "514" },
+        { "order": 3, "operation": "袖付け", "seam": "4本ロック", "stitch": "514" },
+        { "order": 4, "operation": "フロントファスナー付け", "seam": "1cm", "stitch": "301 押さえステッチ" }
+      ],
+      "details": ["胸に小さな刺繍ロゴ"],
+      "confidence": 0.8
+    },
+    {
+      "id": "denim", "name": "ストレートデニム", "category": "bottom", "description": "5ポケットのストレートジーンズ",
+      "colors": [{ "name": "インディゴ", "hex": "#2b3f6b" }],
+      "flat": { "template": "bottom", "type": "pants", "length": "ankle", "fit": "regular", "legShape": "straight", "waistband": "fitted", "fly": true, "frontPockets": 2, "backPockets": 2, "beltLoops": true },
+      "components": [], "materials": [], "measurements": [], "construction": [], "details": [], "confidence": 0.7
+    },
+    {
+      "id": "sneaker", "name": "ローカットスニーカー", "category": "footwear", "description": "",
+      "colors": [{ "name": "ホワイト", "hex": "#f4f4f4" }],
+      "flat": { "template": "footwear", "type": "sneaker", "shaft": "low", "heel": "flat", "closure": "lace-up", "toe": "round" },
+      "components": [], "materials": [], "measurements": [], "construction": [], "details": [], "confidence": 0.6
+    },
+    {
+      "id": "tote", "name": "キャンバストート", "category": "bag", "description": "",
+      "colors": [{ "name": "生成り", "hex": "#e8dfc8" }],
+      "flat": { "template": "bag", "type": "tote", "closure": "none", "handles": 2, "strap": false, "frontPockets": 1 },
+      "components": [], "materials": [], "measurements": [], "construction": [], "details": [], "confidence": 0.6
+    },
+    {
+      "id": "cap", "name": "6パネルキャップ", "category": "headwear", "description": "",
+      "colors": [{ "name": "レッド", "hex": "#c8102e" }],
+      "flat": { "template": "accessory", "type": "cap", "description": "6パネル" },
+      "components": [], "materials": [], "measurements": [], "construction": [], "details": [], "confidence": 0.5
+    }
+  ]
+}
