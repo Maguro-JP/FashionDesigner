@@ -45,7 +45,18 @@ class GatewayTests(unittest.TestCase):
         self.assertEqual(result["image"], "data:image/png;base64," + img)
         payload = json.loads(backend.call_args.args[0].data)
         self.assertEqual(payload["model"], "test")
+        self.assertNotIn("response_format", payload)
         self.assertIn("blue dress", payload["prompt"])
+
+    def test_dalle_base64_format(self):
+        handler = self.request("coat")
+        img = base64.b64encode(b"fake-image").decode()
+        with patch.dict(os.environ, {"FD_IMAGE_API_URL": "https://example.com/v1/images/generations", "FD_IMAGE_MODEL": "dall-e-3"}, clear=True):
+            with patch("server.urlopen", return_value=FakeResponse({"data": [{"b64_json": img}]})) as backend:
+                handler.do_POST()
+        self.assertEqual(handler.status_code, 200)
+        payload = json.loads(backend.call_args.args[0].data)
+        self.assertEqual(payload["response_format"], "b64_json")
 
     def test_reject_external_http(self):
         handler = self.request("coat")
