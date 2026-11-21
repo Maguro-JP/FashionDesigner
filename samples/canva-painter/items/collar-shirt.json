@@ -25,7 +25,8 @@
       "chestPockets": 1,
       "sidePockets": 0,
       "cuffs": true,
-      "hemBand": false
+      "hemBand": false,
+      "shoulder": "set-in"
     },
     "components": [
       {
@@ -61,6 +62,16 @@
       {
         "point": "着丈 (HPS)",
         "valueCm": 70,
+        "tolerance": 1
+      },
+      {
+        "point": "身幅",
+        "valueCm": 52,
+        "tolerance": 1
+      },
+      {
+        "point": "袖丈",
+        "valueCm": 60,
         "tolerance": 1
       }
     ],

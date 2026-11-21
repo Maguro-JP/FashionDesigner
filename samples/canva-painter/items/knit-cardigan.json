@@ -25,7 +25,9 @@
       "chestPockets": 0,
       "sidePockets": 2,
       "cuffs": true,
-      "hemBand": true
+      "hemBand": true,
+      "shoulder": "drop",
+      "pocketStyle": "patch"
     },
     "components": [
       {

@@ -23,6 +23,8 @@ export const TopFlat = z.object({
   sidePockets: z.number().int().describe("0-2"),
   cuffs: z.boolean(),
   hemBand: z.boolean().describe("ribbed or banded hem"),
+  shoulder: z.enum(["set-in", "drop", "raglan"]).optional().describe("shoulder construction; defaults to set-in"),
+  pocketStyle: z.enum(["welt", "patch", "kangaroo"]).optional().describe("style of side pockets"),
 });
 
 export const BottomFlat = z.object({
@@ -68,7 +70,7 @@ export const BagFlat = z.object({
 
 export const AccessoryFlat = z.object({
   template: z.literal("accessory"),
-  type: z.enum(["hat", "cap", "belt", "scarf", "gloves", "necklace", "earrings", "bracelet", "ring", "glasses", "watch", "other"]),
+  type: z.enum(["hat", "cap", "belt", "scarf", "gloves", "necklace", "earrings", "bracelet", "ring", "glasses", "watch", "apron", "other"]),
   description: z.string().describe("shape notes for drawing"),
 });
 

@@ -1,4 +1,5 @@
 import type { Garment, FlatParams } from "../schema.js";
+import { renderTopMeasured } from "./top.js";
 
 /**
  * Parametric flat-sketch renderer.
@@ -125,31 +126,6 @@ function closureDetail(closure: string, fromY: number, toY: number, out: Paths) 
   }
 }
 
-const TOP_LEN = { cropped: 220, waist: 255, hip: 320, thigh: 380, knee: 440 } as const;
-
-function renderTop(p: Extract<FlatParams, { template: "top" }>, view: View) {
-  const out = { outline: [] as Paths, detail: [] as Paths };
-  const bottom = TOP_LEN[p.length];
-  bodice(p, bottom, view, out);
-  const bw = FIT_HALF_WIDTH[p.fit];
-  if (p.hemBand) out.detail.push(line([CX - bw - 2, bottom - 16], [CX + bw + 2, bottom - 16]));
-  if (view === "front") {
-    const start = p.neckline === "v" || p.neckline === "lapel" ? 130 : 90;
-    closureDetail(p.closure, start, bottom, out.detail);
-    for (let i = 0; i < Math.min(p.chestPockets, 2); i++) {
-      const x = i === 0 ? CX + 22 : CX - 62;
-      out.detail.push(poly([[x, 110], [x + 40, 110], [x + 40, 150], [x, 150]]));
-    }
-    if (p.sidePockets > 0) {
-      const y = bottom - 90;
-      out.detail.push(line([CX + bw - 30, y], [CX + bw - 8, y + 50]), line([CX - bw + 30, y], [CX - bw + 8, y + 50]));
-    }
-  } else {
-    out.detail.push(line([CX - bw + 4, 95], [CX + bw - 4, 95])); // back yoke reference
-  }
-  return out;
-}
-
 // ---------- bottoms ----------
 const BOTTOM_LEN = { mini: 200, short: 230, knee: 300, midi: 360, ankle: 440, floor: 462 } as const;
 const LEG_HEM = { straight: 46, tapered: 32, wide: 66, flared: 82, "a-line": 120, pencil: 64, pleated: 130 } as const;
@@ -264,7 +240,7 @@ function renderBag(p: Extract<FlatParams, { template: "bag" }>, view: View) {
 
 // ---------- accessories ----------
 function renderAccessory(p: Extract<FlatParams, { template: "accessory" }>, view: View) {
-  const out = { outline: [] as Paths, detail: [] as Paths };
+  const out = { outline: [] as Paths, detail: [] as Paths, stroke: [] as Paths };
   switch (p.type) {
     case "hat":
       out.outline.push(`M70,300 Q200,330 330,300 Q300,280 270,280 L260,170 Q200,140 140,170 L130,280 Q100,280 70,300 Z`);
@@ -286,6 +262,20 @@ function renderAccessory(p: Extract<FlatParams, { template: "accessory" }>, view
       out.outline.push(`M90,240 a50,40 0 1,0 100,0 a50,40 0 1,0 -100,0 Z`, `M210,240 a50,40 0 1,0 100,0 a50,40 0 1,0 -100,0 Z`);
       out.detail.push(`M190,235 Q200,225 210,235`, line([90, 232], [50, 225]), line([310, 232], [350, 225]));
       break;
+    case "apron": {
+      // bib apron: bib 26cm wide, waist 60cm, length 85cm (scale 4.4px/cm)
+      const k = 4.4, top = 64;
+      const at = (x: number, y: number) => `${fmt(CX + x * k)},${fmt(top + y * k)}`;
+      out.outline.push(`M${at(-13, 0)} L${at(13, 0)} L${at(14, 20)} Q${at(17, 27)} ${at(30, 30)} L${at(31, 85)} L${at(-31, 85)} L${at(-30, 30)} Q${at(-17, 27)} ${at(-14, 20)} Z`);
+      out.stroke.push(`M${at(-12, 0)} C${at(-14, -12)} ${at(14, -12)} ${at(12, 0)}`);
+      out.stroke.push(`M${at(30, 31)} Q${at(38, 34)} ${at(40, 48)} M${at(30, 32)} Q${at(36, 38)} ${at(35, 52)}`);
+      out.stroke.push(`M${at(-30, 31)} Q${at(-38, 34)} ${at(-40, 48)} M${at(-30, 32)} Q${at(-36, 38)} ${at(-35, 52)}`);
+      if (view === "front") {
+        out.detail.push(`M${at(-22, 42)} L${at(22, 42)} L${at(22, 60)} L${at(-22, 60)} Z`, `M${at(0, 42)} L${at(0, 60)}`, `M${at(-6, 6)} L${at(6, 6)} L${at(6, 14)} L${at(-6, 14)} Z`);
+      }
+      out.detail.push(`M${at(-30.6, 83)} L${at(30.6, 83)}`);
+      break;
+    }
     default:
       out.outline.push(`M200,240 m-90,0 a90,90 0 1,0 180,0 a90,90 0 1,0 -180,0`);
       out.detail.push(`M200,240 m-70,0 a70,70 0 1,0 140,0 a70,70 0 1,0 -140,0`);
@@ -293,9 +283,12 @@ function renderAccessory(p: Extract<FlatParams, { template: "accessory" }>, view
   return out;
 }
 
-export function flatPaths(flat: FlatParams, view: View) {
+export type FlatPaths = { outline: Paths; detail: Paths; stroke?: Paths; rib?: Paths };
+
+/** `g` supplies measurements so tops are drawn to the garment's real proportions. */
+export function flatPaths(flat: FlatParams, view: View, g?: Pick<Garment, "measurements">): FlatPaths {
   switch (flat.template) {
-    case "top": return renderTop(flat, view);
+    case "top": return renderTopMeasured(flat, view, g);
     case "bottom": return renderBottom(flat, view);
     case "dress": return renderDress(flat, view);
     case "footwear": return renderFootwear(flat, view);
@@ -308,9 +301,7 @@ const escapeXml = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "
 const safeHex = (hex: string | undefined) => (hex && /^#[0-9a-fA-F]{6}$/.test(hex) ? hex : "#ffffff");
 
 export function renderFlatSvg(g: Garment, view: View): string {
-  const paths = flatPaths(g.flat, view);
-  const { outline, detail } = paths;
-  const stroke: Paths = "stroke" in paths ? (paths.stroke as Paths) : [];
+  const { outline, detail, stroke = [], rib = [] } = flatPaths(g.flat, view, g);
   const fill = safeHex(g.colors[0]?.hex);
   const label = g.flat.template === "footwear" ? (view === "front" ? "SIDE" : "TOP") : view.toUpperCase();
   return [
@@ -319,8 +310,11 @@ export function renderFlatSvg(g: Garment, view: View): string {
     `<g fill="${fill}" fill-opacity="0.35" stroke="#111" stroke-width="2" stroke-linejoin="round">`,
     ...outline.map((d) => `<path d="${d}"/>`),
     `</g>`,
-    `<g fill="none" stroke="#111" stroke-width="2">`,
+    `<g fill="none" stroke="#111" stroke-width="1.5" stroke-linecap="round">`,
     ...stroke.map((d) => `<path d="${d}"/>`),
+    `</g>`,
+    `<g fill="none" stroke="#111" stroke-width="0.6" stroke-opacity="0.7">`,
+    ...rib.map((d) => `<path d="${d}"/>`),
     `</g>`,
     `<g fill="none" stroke="#111" stroke-width="1.2" stroke-dasharray="4 3">`,
     ...detail.map((d) => `<path d="${d}"/>`),

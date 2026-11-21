@@ -17,7 +17,10 @@ function allFlatVariants(): FlatParams[] {
     const shape = option.shape as Record<string, any>;
     const base: Record<string, unknown> = {};
     const enums: [string, string[]][] = [];
-    for (const [k, v] of Object.entries(shape)) {
+    for (const [k, raw] of Object.entries(shape)) {
+      const optional = raw.type === "optional";
+      const v = optional ? raw.unwrap() : raw;
+      if (optional) { if (v.options) enums.push([k, v.options]); continue; }
       if (v.options && Array.isArray(v.options)) { enums.push([k, v.options]); base[k] = v.options[0]; }
       else if (v.value !== undefined) base[k] = v.value;
       else if (v.type === "number") base[k] = 2;
@@ -39,7 +42,7 @@ describe("flat renderer", () => {
       const { outline } = flatPaths(flat, view);
       expect(outline.length).toBeGreaterThan(0);
       const p = flatPaths(flat, view);
-      const all = [...outline, ...p.detail, ...("stroke" in p ? (p.stroke as string[]) : [])].join(" ");
+      const all = [...outline, ...p.detail, ...(p.stroke ?? []), ...(p.rib ?? [])].join(" ");
       expect(all).not.toMatch(/NaN|undefined|Infinity/);
       // absolute coordinates (M/L/Q/C pairs) stay on the canvas
       for (const m of all.matchAll(/[MLQC]\s*(-?[\d.]+),(-?[\d.]+)/g)) {
@@ -49,6 +52,15 @@ describe("flat renderer", () => {
         expect(Number(m[2])).toBeLessThanOrEqual(VIEW_H + 1);
       }
     }
+  });
+  it("draws tops to the garment's measurements", () => {
+    const g = spec.items[0]!;
+    const widthOf = (cm: number) => {
+      const d = flatPaths(g.flat, "front", { measurements: [{ point: "身幅", valueCm: cm, tolerance: 1 }, { point: "着丈", valueCm: 68, tolerance: 1 }] }).outline[0]!;
+      const xs = [...d.matchAll(/(-?[\d.]+),(-?[\d.]+)/g)].map((m) => Number(m[1]));
+      return Math.max(...xs) - Math.min(...xs);
+    };
+    expect(widthOf(62)).toBeGreaterThan(widthOf(48) * 1.15);
   });
   it("front and back differ for a zip hoodie", () => {
     const g = spec.items[0]!;

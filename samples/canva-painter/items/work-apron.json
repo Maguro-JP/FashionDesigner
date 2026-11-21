@@ -17,8 +17,8 @@
     ],
     "flat": {
       "template": "accessory",
-      "type": "other",
-      "description": "胸当てエプロン。専用テンプレートが無いため汎用形で表示"
+      "type": "apron",
+      "description": "胸当てエプロン。首ひも、腰ひも、前ポケット"
     },
     "components": [
       {
