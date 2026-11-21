@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fashion-designer"
+version = "0.1.0"
+description = "FashionDesigner: 服飾の Studio と、AtelIer の拡張「服飾」"
+requires-python = ">=3.10"
+# server.py と画面は標準ライブラリだけで動く。AtelIer の拡張を使うときだけ atelier を入れる
+dependencies = []
+
+[project.optional-dependencies]
+atelier = ["atelier @ git+https://github.com/Maguro-JP/AtelIer.git@main"]
+
+[project.entry-points."atelier.extensions"]
+fashion_designer = "fashion_designer.extension:EXTENSION"
+
+[tool.setuptools]
+packages = ["fashion_designer"]
