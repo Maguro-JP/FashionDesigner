@@ -95,9 +95,8 @@ class FashionExtension:
             return
         try:
             from PySide6.QtWebEngineWidgets import QWebEngineView
-        except ImportError:   # QtWebEngine が無いときだけブラウザに頼る
-            from PySide6.QtGui import QDesktopServices
-            QDesktopServices.openUrl(QUrl(STUDIO_URL))
+        except ImportError:   # ブラウザには逃がさない。窓で開けない理由を出す
+            window.statusBar().showMessage("Studio を窓で開くには PySide6 の QtWebEngine が要ります", 8000)
             return
         view = QWebEngineView()
         view.setWindowTitle("FashionDesigner Studio")
