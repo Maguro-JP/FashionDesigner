@@ -30,4 +30,4 @@ AtelIer の側の決まりは、AtelIer の `docs/knowledge/integration.md` の�
 | 入口 2: 単体のアプリ | 一部ある | `python server.py` で 127.0.0.1:8765 に画面を出せるが、自分のウィンドウでは開かない（URL を出すだけ）。Setup.exe は無い |
 | 入口 3: ほかの AI サービスから使う口 | 一部ある | MCP のサーバーは無い。`server.py` の `POST /api/generate` は HTTP で呼べるが、コマンドで呼べる口は無い |
 
-足りない物は、中身の処理を Python の部品に分けること、`extension.json` と置き場に入れる Setup.exe、自分のウィンドウで開く単体のアプリと Setup.exe、MCP のサーバーとコマンドの口。この文書ではコードを変えていない。共有の作業ツリーにある、まだ push されていない 2 つのコミット（`5945290`「Studio の窓を AtelIer とは別の処理で出す」など）は、この表に入れていない。
+足りない物は、中身の処理を Python の部品に分けること、`extension.json` と置き場に入れる Setup.exe、自分のウィンドウで開く単体のアプリと Setup.exe、MCP のサーバーとコマンドの口。この文書ではコードを変えていない。
