@@ -143,15 +143,20 @@ def extruded_mesh(
     faces: list[Triangle] = []
     winding = signed_area(points)
     for a, b, c in caps:
-        bottom = (a, c, b) if winding > 0 else (a, b, c)
-        top = (a + count, b + count, c + count) if winding > 0 else (
-            a + count, c + count, b + count
+        # Flipping image Y reverses the 2D winding in 3D space.
+        bottom = (a, b, c) if winding > 0 else (a, c, b)
+        top = (a + count, c + count, b + count) if winding > 0 else (
+            a + count, b + count, c + count
         )
         faces.extend((bottom, top))
     for i in range(count):
         j = (i + 1) % count
-        faces.append((i, j, j + count))
-        faces.append((i, j + count, i + count))
+        if winding > 0:
+            faces.append((i, j + count, j))
+            faces.append((i, i + count, j + count))
+        else:
+            faces.append((i, j, j + count))
+            faces.append((i, j + count, i + count))
     return vertices, faces
 
 
