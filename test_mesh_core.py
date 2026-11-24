@@ -27,6 +27,15 @@ class MeshCoreTests(unittest.TestCase):
                 edge = tuple(sorted((a, b)))
                 edge_counts[edge] = edge_counts.get(edge, 0) + 1
         self.assertTrue(all(count == 2 for count in edge_counts.values()))
+        volume = sum(
+            (
+                vertices[a][0] * (vertices[b][1] * vertices[c][2] - vertices[b][2] * vertices[c][1])
+                + vertices[a][1] * (vertices[b][2] * vertices[c][0] - vertices[b][0] * vertices[c][2])
+                + vertices[a][2] * (vertices[b][0] * vertices[c][1] - vertices[b][1] * vertices[c][0])
+            ) / 6
+            for a, b, c in faces
+        )
+        self.assertAlmostEqual(volume, 12.0)
 
     def test_obj_has_vertices_and_only_triangles(self):
         obj = export_obj([(0, 0), (2, 0), (2, 2), (0, 2)], 3)
@@ -43,7 +52,11 @@ class MeshCoreTests(unittest.TestCase):
         document = json.loads(glb[20:20 + json_length])
         self.assertEqual(document["asset"]["version"], "2.0")
         self.assertEqual(document["meshes"][0]["primitives"][0]["mode"], 4)
-        self.assertEqual(len(document["accessors"][0]["count"] if isinstance(document["accessors"][0]["count"], list) else [0]), 1)
+        self.assertEqual(document["accessors"][0]["count"], 8)
+        self.assertEqual(document["accessors"][1]["count"], 36)
+        binary_length, binary_type = struct.unpack_from("<II", glb, 20 + json_length)
+        self.assertEqual(binary_type, 0x004E4942)
+        self.assertEqual(binary_length, len(glb) - (28 + json_length))
 
     def test_invalid_self_intersecting_outline_is_rejected(self):
         with self.assertRaises(GeometryError):
