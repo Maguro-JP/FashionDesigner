@@ -1,0 +1,11 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FashionDesigner Mesh Core</title></head>
+<body>
+<main>
+<h1>FashionDesigner mesh core</h1>
+<p>JSON形状から閉じた三角形メッシュを作り、OBJ/GLBへ書き出すPython標準ライブラリのみのコアです。現在は単一輪郭の押し出しまでを対象とし、縫製済み衣服や人体フィットは生成しません。</p>
+<ol><li>JSON形状データを用意する</li><li><code>export_obj(points, depth)</code> または <code>export_glb(points, depth)</code> を呼び出す</li><li>出力を3Dソフトで開き、軸・尺度・面の向きを確認する</li></ol>
+<p>ローカル検証: <code>python -m unittest -v test_mesh_core.py</code></p>
+<p>詳細は <a href="docs/mesh-core.md">設計と制限</a> を参照。</p>
+</main>
+</body></html>
