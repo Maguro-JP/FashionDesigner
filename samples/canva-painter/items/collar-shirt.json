@@ -1,0 +1,107 @@
+{
+  "schema": "fashion-designer/garment-spec@1",
+  "source": {
+    "kind": "image",
+    "ref": "samples/canva-painter/source.png"
+  },
+  "item": {
+    "id": "collar-shirt",
+    "name": "レギュラーカラーシャツ",
+    "category": "top",
+    "description": "カーディガンの下に着た淡いブルーのシャツ。襟だけが見える。",
+    "colors": [
+      {
+        "name": "サックスブルー",
+        "hex": "#bcd3e6"
+      }
+    ],
+    "flat": {
+      "template": "top",
+      "sleeve": "long",
+      "neckline": "shirt-collar",
+      "length": "hip",
+      "fit": "regular",
+      "closure": "buttons",
+      "chestPockets": 1,
+      "sidePockets": 0,
+      "cuffs": true,
+      "hemBand": false,
+      "shoulder": "set-in"
+    },
+    "components": [
+      {
+        "name": "襟・台襟",
+        "kind": "collar",
+        "quantity": 2,
+        "material": "cotton",
+        "notes": "接着芯"
+      },
+      {
+        "name": "カフス",
+        "kind": "cuff",
+        "quantity": 2,
+        "material": "cotton",
+        "notes": ""
+      }
+    ],
+    "materials": [
+      {
+        "id": "cotton",
+        "role": "shell",
+        "name": "ブロード",
+        "composition": "綿100%（推定）",
+        "weight": "110 gsm",
+        "finish": "",
+        "color": {
+          "name": "サックスブルー",
+          "hex": "#bcd3e6"
+        }
+      }
+    ],
+    "measurements": [
+      {
+        "point": "着丈 (HPS)",
+        "valueCm": 70,
+        "tolerance": 1
+      },
+      {
+        "point": "身幅",
+        "valueCm": 52,
+        "tolerance": 1
+      },
+      {
+        "point": "袖丈",
+        "valueCm": 60,
+        "tolerance": 1
+      }
+    ],
+    "construction": [
+      {
+        "order": 1,
+        "operation": "襟を作り台襟に挟む",
+        "seam": "0.7cm",
+        "stitch": "301 2.5mm 押さえ"
+      },
+      {
+        "order": 2,
+        "operation": "ヨーク・肩を縫う",
+        "seam": "1cm 折り伏せ",
+        "stitch": "301"
+      },
+      {
+        "order": 3,
+        "operation": "袖付け、脇を巻き縫い",
+        "seam": "巻き縫い",
+        "stitch": "401"
+      }
+    ],
+    "details": [
+      "胸ポケットは推定"
+    ],
+    "confidence": 0.4
+  },
+  "files": {
+    "front": "collar-shirt-front.svg",
+    "back": "collar-shirt-back.svg"
+  }
+}

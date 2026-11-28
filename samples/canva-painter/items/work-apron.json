@@ -1,0 +1,64 @@
+{
+  "schema": "fashion-designer/garment-spec@1",
+  "source": {
+    "kind": "image",
+    "ref": "samples/canva-painter/source.png"
+  },
+  "item": {
+    "id": "work-apron",
+    "name": "胸当てワークエプロン",
+    "category": "accessory",
+    "description": "チャコールの胸当てエプロン。首かけ・腰ひも。",
+    "colors": [
+      {
+        "name": "チャコール",
+        "hex": "#4a4a4f"
+      }
+    ],
+    "flat": {
+      "template": "accessory",
+      "type": "apron",
+      "description": "胸当てエプロン。首ひも、腰ひも、前ポケット"
+    },
+    "components": [
+      {
+        "name": "本体",
+        "kind": "panel",
+        "quantity": 1,
+        "material": "canvas",
+        "notes": ""
+      },
+      {
+        "name": "首ひも・腰ひも",
+        "kind": "strap",
+        "quantity": 3,
+        "material": "canvas",
+        "notes": ""
+      }
+    ],
+    "materials": [
+      {
+        "id": "canvas",
+        "role": "shell",
+        "name": "帆布 8号",
+        "composition": "綿100%（推定）",
+        "weight": "unknown",
+        "finish": "パラフィン加工の可能性",
+        "color": {
+          "name": "チャコール",
+          "hex": "#4a4a4f"
+        }
+      }
+    ],
+    "measurements": [],
+    "construction": [],
+    "details": [
+      "前ポケットは画像では未確認"
+    ],
+    "confidence": 0.4
+  },
+  "files": {
+    "front": "work-apron-front.svg",
+    "back": "work-apron-back.svg"
+  }
+}

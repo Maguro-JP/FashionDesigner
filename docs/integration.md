@@ -15,6 +15,30 @@ FashionDesignerと3DDesignerには、単一の2D輪郭を閉じた三角メッ�
 
 これは輪郭から厚みを持つ形を作る処理で、服の前身頃・後身頃・袖などを分けて縫い合わせたり、人物に着せたりする機能ではありません。現状の3D出力を完成した衣服モデルとして扱いません。
 
+## 統合テスト（未実行）
+- CharacterDesignerで実生成したPNGをFashionDesignerに読み込む。
+- FashionDesignerの抽出→SVG/JSON/OBJ出力を検証する。
+- JSONの再読み込みで輪郭が維持されるか検証する。
+- AtelIerが実際に対応する形式を確認し、往復編集でデータ欠落がないか検証する。
+
+## 第3段階：アイテム分解の受け渡し（GarmentSpec、実装済み・連携先は未対応）
+画像から服・靴・カバン・小物を分解した結果を `fashion-designer/garment-spec@1`（定義: `src/schema.ts`）の JSON で出力する。
+Studio の輪郭データ（形）に対し、こちらは「何のアイテムか・素材・パーツ・縫製手順」を持つ。第2段階の `pieces` / `measurements` の中身の候補とする。
+
+```mermaid
+flowchart LR
+  CD[CharacterDesigner PNG] --> DEC[decompose]
+  IMG[写真・絵] --> DEC
+  DEC -- spec.json --> R[render]
+  R -- 平面図SVG / techpack.html --> OUT[資料]
+  OUT -. PNG/SVG を開けるか未確認 .-> AT[AtelIer]
+```
+
+- CharacterDesigner -> FashionDesigner: 保存した PNG を `npm run cli -- decompose <png>` に渡す。キャラ ID は `--hint` で渡す
+- 手修正: `spec.json` を編集して `render` で平面図と仕様書を作り直す
+- AtelIer: 読み込める形式が未確認のため、spec.json を直接読めるとは主張しない
+- 互換性: 項目追加は版を変えない。削除・意味変更は `@2` に上げる。読み手は知らない項目を無視する
+
 ## まだ接続していない範囲
 
 - CharacterDesignerの骨付き人物GLBを3DDesignerへ読み込み、FashionDesignerの服を同じ座標・尺度で合わせる。

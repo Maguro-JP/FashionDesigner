@@ -1,0 +1,173 @@
+{
+  "schema": "fashion-designer/garment-spec@1",
+  "source": {
+    "kind": "image",
+    "ref": "samples/canva-painter/source.png"
+  },
+  "item": {
+    "id": "knit-cardigan",
+    "name": "ローゲージ ニットカーディガン",
+    "category": "outerwear",
+    "description": "生成り色のゆったりしたニットカーディガン。前開き、長袖、リブ袖口と裾。",
+    "colors": [
+      {
+        "name": "生成り",
+        "hex": "#e9dfc9"
+      }
+    ],
+    "flat": {
+      "template": "top",
+      "sleeve": "long",
+      "neckline": "v",
+      "length": "hip",
+      "fit": "oversized",
+      "closure": "buttons",
+      "chestPockets": 0,
+      "sidePockets": 2,
+      "cuffs": true,
+      "hemBand": true,
+      "shoulder": "drop",
+      "pocketStyle": "patch"
+    },
+    "components": [
+      {
+        "name": "前身頃",
+        "kind": "panel",
+        "quantity": 2,
+        "material": "knit",
+        "notes": "成型編み"
+      },
+      {
+        "name": "後身頃",
+        "kind": "panel",
+        "quantity": 1,
+        "material": "knit",
+        "notes": ""
+      },
+      {
+        "name": "袖",
+        "kind": "sleeve",
+        "quantity": 2,
+        "material": "knit",
+        "notes": "ドロップショルダー"
+      },
+      {
+        "name": "前立て",
+        "kind": "trim",
+        "quantity": 1,
+        "material": "rib",
+        "notes": "1x1 リブ"
+      },
+      {
+        "name": "ボタン",
+        "kind": "hardware",
+        "quantity": 5,
+        "material": "button",
+        "notes": "推定"
+      },
+      {
+        "name": "ポケット",
+        "kind": "pocket",
+        "quantity": 2,
+        "material": "knit",
+        "notes": "パッチ"
+      }
+    ],
+    "materials": [
+      {
+        "id": "knit",
+        "role": "shell",
+        "name": "ウール混ローゲージ天竺",
+        "composition": "ウール50% アクリル50%（推定）",
+        "weight": "5ゲージ",
+        "finish": "",
+        "color": {
+          "name": "生成り",
+          "hex": "#e9dfc9"
+        }
+      },
+      {
+        "id": "rib",
+        "role": "rib",
+        "name": "1x1 リブ",
+        "composition": "同上",
+        "weight": "unknown",
+        "finish": "",
+        "color": {
+          "name": "生成り",
+          "hex": "#e9dfc9"
+        }
+      },
+      {
+        "id": "button",
+        "role": "hardware",
+        "name": "ウッドボタン",
+        "composition": "木",
+        "weight": "18mm",
+        "finish": "",
+        "color": {
+          "name": "ブラウン",
+          "hex": "#7a5a3a"
+        }
+      }
+    ],
+    "measurements": [
+      {
+        "point": "着丈 (HPS)",
+        "valueCm": 66,
+        "tolerance": 2
+      },
+      {
+        "point": "身幅",
+        "valueCm": 60,
+        "tolerance": 2
+      },
+      {
+        "point": "袖丈",
+        "valueCm": 52,
+        "tolerance": 2
+      }
+    ],
+    "construction": [
+      {
+        "order": 1,
+        "operation": "各パーツを成型編み",
+        "seam": "-",
+        "stitch": "-"
+      },
+      {
+        "order": 2,
+        "operation": "肩をリンキング",
+        "seam": "リンキング",
+        "stitch": "リンキング"
+      },
+      {
+        "order": 3,
+        "operation": "袖付け・脇と袖下を綴じる",
+        "seam": "リンキング",
+        "stitch": "リンキング"
+      },
+      {
+        "order": 4,
+        "operation": "前立てリブを付け、ボタン穴を開ける",
+        "seam": "リンキング",
+        "stitch": "鳩目穴かがり"
+      },
+      {
+        "order": 5,
+        "operation": "ポケットを手綴じ、ボタン付け",
+        "seam": "手綴じ",
+        "stitch": "-"
+      }
+    ],
+    "details": [
+      "肩はドロップショルダー",
+      "袖を軽くたくし上げて着用"
+    ],
+    "confidence": 0.6
+  },
+  "files": {
+    "front": "knit-cardigan-front.svg",
+    "back": "knit-cardigan-back.svg"
+  }
+}
