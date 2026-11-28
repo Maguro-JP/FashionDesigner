@@ -1,33 +1,19 @@
-# FashionDesigner ↔ CharacterDesigner ↔ AtelIer 連携仕様（v0.1）
+# AtelIer・CharacterDesigner・FashionDesigner・3DDesignerの連携仕様
 
-## 確認済みの既存構成
-- CharacterDesigner: `chatdraw/` の PySide6 デスクトップアプリ。画像生成、レイヤー編集、PNG/PSD書き出し、人物設定資料、三面図、Blender向け厚み形状の機能が README に記載されている。
-- AtelIer: README は「ペイントソフト」のみ。ファイル形式、API、起動方式、受信インターフェースは確認できていない。連携実装済みとは扱わない。
-- FashionDesigner: `studio.html` が画像読み込み、輪郭抽出、SVG/JSON/OBJ出力を持つ。
+## 役割
 
-## 第1段階：ファイルベースの交換（API不要）
-1. CharacterDesigner で生成した画像を PNG として保存する。
-2. FashionDesigner Studio で PNG を読み込み、輪郭を抽出し編集する。
-3. FashionDesigner から SVG（輪郭図面）、JSON（編集可能な輪郭）、OBJ（単純押し出し）を出力する。
-4. AtelIer が PNG を読み込める場合は元画像を開いて加筆する。AtelIer 側の対応形式が未確認のため、SVG/JSON/OBJ を直接読み込めるとは主張しない。
+| アプリ | 担当 | 現在確認できる入出力/機能 |
+| --- | --- | --- |
+| AtelIer | 絵を描く・直すホストアプリ | PNG/PSDの読込・書出し。CharacterDesigner拡張の実行先 |
+| CharacterDesigner | 人物の設定資料・三面図と人物3D | 三面図生成、PNG/PSD書出し。1枚絵/三面図から骨付きVRM 1.0/GLBを作る `tools/engine/chara3d.py` もある |
+| FashionDesigner | 服画像から輪郭・図面/形状JSONを作る | PNG読込、輪郭編集、SVG/JSON出力、ローカルAPI経由のOBJ/GLB押し出し |
+| 3DDesigner | 形状JSONをメッシュへ変換する | FashionDesignerの `fashiondesigner.shape.v2` JSONを読込み、OBJ/GLB出力 |
 
-## 第2段階：共通プロジェクト形式（提案）
-`fashiondesigner.project.v1`:
-- `source`: 元画像の参照と生成元
-- `views`: front/back/side の画像と輪郭
-- `pieces`: 身頃、袖、スカート等の個別パーツ（実装予定）
-- `measurements`: 実測寸法、単位、根拠
-- `layers`: 編集レイヤー（実装予定）
-- `exports`: SVG/OBJ/将来のGLB
-- `provenance`: 生成元、モデル、時刻（取得できた場合）
+## 現在動く範囲
 
-寸法は写真から正確に確定できない。実測入力なしに「製造用型紙」と称さない。
+FashionDesignerと3DDesignerには、単一の2D輪郭を閉じた三角メッシュへ押し出すローカル処理があります。FashionDesigner StudioではJSON/OBJ/GLBを出し、3DDesignerの画面ではそのJSONを読み込んでOBJ/GLBを出力します。両方のメッシュコアで6件の単体テストが通り、HTTP APIのOBJ/GLB応答もローカルで確認しました。
 
-## 連携の安全条件
-- 既存アプリの未確認APIを呼ばない。
-- 外部アプリへの自動送信には送信先の実装と明示的な操作が必要。
-- 画像生成は CharacterDesigner 側の実際の生成エンジンを使う。FashionDesigner からの直接起動は、受信API/CLIを調査してから実装する。
-- AtelIer との双方向編集は、同アプリのコード構成と入出力仕様を確認してから実装する。
+これは輪郭から厚みを持つ形を作る処理で、服の前身頃・後身頃・袖などを分けて縫い合わせたり、人物に着せたりする機能ではありません。現状の3D出力を完成した衣服モデルとして扱いません。
 
 ## 統合テスト（未実行）
 - CharacterDesignerで実生成したPNGをFashionDesignerに読み込む。
@@ -52,3 +38,26 @@ flowchart LR
 - 手修正: `spec.json` を編集して `render` で平面図と仕様書を作り直す
 - AtelIer: 読み込める形式が未確認のため、spec.json を直接読めるとは主張しない
 - 互換性: 項目追加は版を変えない。削除・意味変更は `@2` に上げる。読み手は知らない項目を無視する
+
+## まだ接続していない範囲
+
+- CharacterDesignerの骨付き人物GLBを3DDesignerへ読み込み、FashionDesignerの服を同じ座標・尺度で合わせる。
+- FashionDesignerで画像から複数の衣服パネルを認識し、縫い目・縫い代・寸法を保持する。
+- 服パネルを3D上で配置・縫合し、人物の体型に合わせ、貫通や隙間を確認する。
+- AtelIerで修正した絵を差分確認付きでFashionDesignerへ戻し、元画像/編集レイヤー/形状を対応付ける。
+- CharacterDesigner・AtelIerと直接通信するAPIやプラグイン。現時点ではPNG/PSD/JSON/GLB等のファイル交換を基準にする。
+
+## 形状データと単位
+
+現行FashionDesigner形状JSON `fashiondesigner.shape.v2` は `unit: "mm"` と単一の `points` 輪郭を持ちます。3DDesignerは点列と正の押し出し厚みを受け取ります。複数パネル、穴、縫合線、衣服部位、人物への配置変換はまだ表現しません。
+
+次の共通形式では、元画像と座標変換、人物ビュー、採寸根拠、複数の `pieces`、閉輪郭/穴、各パネルの縫合辺、縫い代、材料/厚み、生成履歴を保持します。写真から実寸を特定できない場合は尺度未確定として表示し、製造用型紙と称しません。
+
+## 次の統合試験
+
+1. CharacterDesignerまたはAtelIerから人物/服の実画像をPNGで書き出し、FashionDesignerへ読み込む。
+2. FashionDesignerの輪郭抽出とJSON保存を実行し、再読込で点列・単位・画像座標が保たれることを確認する。
+3. 同じ実JSONを3DDesignerに読み込み、OBJ/GLBを出力する。Blender等で再読込して軸・尺度・法線・見た目を確かめる。
+4. CharacterDesigner出力の人物GLBを読み込み、人物と服の座標系/尺度が一致するかを試す。この機能は未実装のため、まずインポートとビューアを追加する。
+5. パネル/縫合の共通形式を決めてから衣服メッシュを実装し、前後・側面表示、重大な貫通/隙間、寸法差を評価する。
+6. AtelIerで編集したPNG/PSDを再取り込みし、元絵との対応と抽出輪郭の差分を確認する。

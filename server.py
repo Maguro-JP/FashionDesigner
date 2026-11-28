@@ -11,6 +11,8 @@ from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlsplit
+
+from mesh_core import GeometryError, export_glb
 import ipaddress
 
 ROOT = Path(__file__).resolve().parent
@@ -21,6 +23,9 @@ class Handler(SimpleHTTPRequestHandler):
         super().__init__(*args, directory=str(ROOT), **kwargs)
 
     def do_POST(self):
+        if self.path == "/api/mesh":
+            self.handle_mesh()
+            return
         if self.path != "/api/generate":
             self.send_error(404)
             return
@@ -76,6 +81,31 @@ class Handler(SimpleHTTPRequestHandler):
             self.reply(400, {"error": str(e)})
         except (HTTPError, URLError, TimeoutError) as e:
             self.reply(502, {"error": "Image backend unavailable: " + str(e)})
+
+    def handle_mesh(self):
+        length = int(self.headers.get("Content-Length", "0"))
+        if length <= 0 or length > 256 * 1024:
+            self.send_error(413, "Invalid mesh request size")
+            return
+        try:
+            data = json.loads(self.rfile.read(length))
+            points = data.get("points")
+            depth = data.get("depth")
+            if not isinstance(points, list):
+                raise ValueError("points must be an array")
+            if not isinstance(depth, (int, float)) or isinstance(depth, bool):
+                raise ValueError("depth must be a positive number")
+            glb = export_glb(points, float(depth))
+            self.send_response(200)
+            self.send_header("Content-Type", "model/gltf-binary")
+            self.send_header("Content-Length", str(len(glb)))
+            self.send_header("Content-Disposition", 'attachment; filename="fashion-outline-extrusion.glb"')
+            self.end_headers()
+            self.wfile.write(glb)
+        except (GeometryError, ValueError, TypeError, KeyError, json.JSONDecodeError) as e:
+            self.reply(400, {"error": str(e)})
+        except (BrokenPipeError, ConnectionResetError):
+            return
 
     def reply(self, status, obj):
         body = json.dumps(obj).encode()
